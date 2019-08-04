@@ -251,6 +251,8 @@ class ScaffoldedFrameSrl(Model):
                                                      constit_tags=tags,
                                                      text_mask=text_mask)
 
+        #Computing y_hat_parse
+        output_dict = self.compute_constit_graph_only_decode(span_scores=span_scores,text_mask=text_mask)
         if self.fast_mode and not self.training:
             output_dict["loss"] = Variable(torch.FloatTensor([0.00]))
 
@@ -318,6 +320,23 @@ class ScaffoldedFrameSrl(Model):
                                                                              span_mask)
                 output_dict["loss"] = cross_entropy_loss
 
+        return output_dict
+
+    def compute_constit_graph_only_decode(self, span_scores,  text_mask):
+        batch_size = text_mask.size(0)
+        # Shape (batch_size, sequence_length * max_span_width, self.num_classes)
+        constit_logits = self.constit_arg_projection_layer(span_scores)
+        output_dict = {"mask": text_mask, "constit_logits": constit_logits}
+
+        # Decoding
+        if not self.training or (self.training and not self.fast_mode):
+            reshaped_log_probs = constit_logits.view(-1, self.num_constit_tags)
+            constit_probabilities = F.softmax(reshaped_log_probs,                                                                                  dim=-1).view(batch_size, -1, self.num_constit_tags)
+            constit_predictions = constit_probabilities.max(-1)[1]
+            output_dict["constit_probabilities"] = constit_probabilities
+            self.metrics["constituents"](predictions=constit_predictions.view(batch_size, -1, self.max_span_width),
+                                         gold_labels=constit_predictions.view(batch_size, -1, self.max_span_width),
+                                         mask=text_mask)
         return output_dict
 
     def get_new_tags_np_pp(self, tags: torch.Tensor, batch_size: int)-> torch.Tensor:
@@ -394,8 +413,9 @@ class ScaffoldedFrameSrl(Model):
         #     # During training, we only really care about the overall
         #     # metrics, so we filter for them here.
         #     # TODO(Mark): This is fragile and should be replaced with some verbosity level in Trainer.
-        metric_dict = self.metrics["srl"].get_metric(reset=reset)
-        return metric_dict
+        #metric_dict_parse = self.metrics["srl"].get_metric(reset=reset)
+        metric_dict_parse = self.metrics["constituents"].get_metric(reset=reset)
+        return metric_dict_parse
 
     @classmethod
     def from_params(cls, vocab: Vocabulary, params: Params) -> 'ScaffoldedFrameSrl':

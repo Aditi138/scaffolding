@@ -157,7 +157,7 @@ def convert_spans_to_seq(spans: Set[Tuple[int, int, str]], length: int) -> List[
         start, end, label = span
         for position in range(start, end+1):
             assert position < length
-            assert seq[position] == "O"
+            #assert seq[position] == "O"
             seq[position] = label
     return seq
 
@@ -237,6 +237,7 @@ def evaluate_from_args(args: argparse.Namespace) -> Dict[str, Any]:
     iterator = BasicIterator(batch_size=32)
 
     serialization_directory = args.archive_file[:-13]
+    print(archive.config.get("model").get("type"))
     metrics = evaluate(model,
                        dataset,
                        iterator,

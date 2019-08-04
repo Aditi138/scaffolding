@@ -14,7 +14,8 @@ from allennlp.modules.token_embedders import Embedding
 from allennlp.modules import FeedForward
 from allennlp.modules import Seq2SeqEncoder, TimeDistributed, TextFieldEmbedder
 from allennlp.nn import util, InitializerApplicator, RegularizerApplicator
-from allennlp.training.metrics import MentionRecall, ConllCorefScores
+#from allennlp.training.metrics import MentionRecall, ConllCorefScores
+from allennlp.training.metrics import MentionRecall
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
