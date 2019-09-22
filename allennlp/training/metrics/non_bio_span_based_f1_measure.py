@@ -62,6 +62,8 @@ class NonBioSpanBasedF1Measure(Metric):
         self._true_positives: Dict[str, int] = defaultdict(int)
         self._false_positives: Dict[str, int] = defaultdict(int)
         self._false_negatives: Dict[str, int] = defaultdict(int)
+        self._gold_spans: List[Set[Tuple[int, int, str]]] = []
+        self._predicted_spans: List[Set[Tuple[int, int, str]]] = []
 
     def __call__(self,
                  predictions: torch.Tensor,
@@ -119,6 +121,8 @@ class NonBioSpanBasedF1Measure(Metric):
                 sequence_prediction[:length].tolist(), merge=True)
             gold_spans = self._extract_spans(
                 sequence_gold_label[:length].tolist(), merge=True)
+            self._gold_spans.append(gold_spans)
+            self._predicted_spans.append(prediction_spans)
 
             # FN is not to be evaluated for empty gold annotations.
             if not gold_spans and frames:
@@ -236,6 +240,8 @@ class NonBioSpanBasedF1Measure(Metric):
         all_metrics["precision-overall"] = precision
         all_metrics["recall-overall"] = recall
         all_metrics["f1-measure-overall"] = f1_measure
+        all_metrics["gold_spans"] = self._gold_spans
+        all_metrics["predicted_spans"] = self._predicted_spans
         if reset:
             self.reset()
         return all_metrics
