@@ -157,7 +157,7 @@ def convert_spans_to_seq(spans: Set[Tuple[int, int, str]], length: int) -> List[
         start, end, label = span
         for position in range(start, end+1):
             assert position < length
-            #assert seq[position] == "O"
+            assert seq[position] == "O"
             seq[position] = label
     return seq
 
