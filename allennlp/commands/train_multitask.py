@@ -1,4 +1,5 @@
 """
+        import pdb;pdb.set_trace()
 The ``train`` subcommand can be used to train a model.
 It requires a configuration file and a directory in
 which to write the results.

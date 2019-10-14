@@ -17,3 +17,4 @@ from allennlp.models.span_srl.frame_semi_crf_srl import FrameSemanticRoleLabeler
 from allennlp.models.span_srl.scaffolding.constit_labeler import ConstitLabeler
 from allennlp.models.span_srl.propbank_scaffolded_span_srl import PropBankScaffoldSpanSrl
 from allennlp.models.span_srl.scaffolding.scaffolded_pb_srl import ScaffoldedPropBankSrl
+from allennlp.models.span_srl.scaffolding.scaffolded_frame_srl_constraint import ScaffoldedFrameSrlConstraint

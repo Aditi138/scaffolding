@@ -251,8 +251,6 @@ class ScaffoldedFrameSrl(Model):
                                                      constit_tags=tags,
                                                      text_mask=text_mask)
 
-        #Computing y_hat_parse
-        output_dict = self.compute_constit_graph_only_decode(span_scores=span_scores,text_mask=text_mask)
         if self.fast_mode and not self.training:
             output_dict["loss"] = Variable(torch.FloatTensor([0.00]))
 
@@ -413,8 +411,8 @@ class ScaffoldedFrameSrl(Model):
         #     # During training, we only really care about the overall
         #     # metrics, so we filter for them here.
         #     # TODO(Mark): This is fragile and should be replaced with some verbosity level in Trainer.
-        #metric_dict_parse = self.metrics["srl"].get_metric(reset=reset)
-        metric_dict_parse = self.metrics["constituents"].get_metric(reset=reset)
+        metric_dict_parse = self.metrics["srl"].get_metric(reset=reset)
+        #metric_dict_parse = self.metrics["constituents"].get_metric(reset=reset)
         return metric_dict_parse
 
     @classmethod
